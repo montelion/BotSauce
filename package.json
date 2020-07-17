@@ -1,0 +1,25 @@
+{
+  "name": "BotSauce",
+  "main": "server.js",
+  "description": "Botsauce",
+  "version": "2.2.0",
+  "private": false,
+  "engines": {
+    "node": "12.*"
+  },
+  "scripts": {
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Montelion/BotSauce"
+  },
+  "dependencies": {
+    "discord.js": "^12.2.0",
+    "ffmpeg-static": "*",
+    "@discordjs/opus": "*",
+    "ytdl-core": "*"
+  },
+  "author": "Montelion#",
+  "license": "Apache-2.0"
+}
