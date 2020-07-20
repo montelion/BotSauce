@@ -1,4 +1,4 @@
-//	BotSauce v2.2, the Discord bot for the official Vsauce3 Discord Server
+//	BotSauce v2.3, the Discord bot for the official Vsauce3 Discord Server
 //	Copyright (C) 2020 Montelion#3581
 //
 //	This program is free software: you can redistribute it and/or modify
@@ -13,7 +13,7 @@
 //
 //	You should have received a copy of the GNU General Public License
 //	along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
+ 
 //	The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
@@ -29,19 +29,19 @@ let statusPrefix
 let presenceType
 
 //Put your bot token in place of 'your bot token here'
-const botToken = 'your bot token here'
+const botToken = 'your_bot_token_here'
 
 
 
 client.on('ready', () => {
 
-	//The following line appears in the Command Prompt window
-	console.log('If you see this, the bot is running. Hurray! \nIf you close this window, the bot dies \:\('); 
-	
-	//The following 3 lines set the bot's default status.
-	client.user.setActivity('\\help | Watching Michael Says Prime Numbers for 3 Hours', { type: 'LISTENING' })  //The type needs to be either WATCHING, PLAYING, LISTENING OR STREAMING
-	.then(presence => console.log('Status set to "Listening to \\help | Watching Michael Says Prime Numbers for 3 Hours"'))  //                                           ^(to)
-	.catch(console.error);
+    //The following line appears in the Command Prompt window
+    console.log('If you see this, the bot is running. Hurray! \nIf you close this window, the bot dies \:\('); 
+
+    //The following 3 lines set the bot's default status.
+    client.user.setActivity('\\help | Watching Michael Says Prime Numbers for 3 Hours', { type: 'LISTENING' })  //The type needs to be either WATCHING, PLAYING, LISTENING OR STREAMING
+    .then(presence => console.log('Status set to "Listening to \\help | Watching Michael Says Prime Numbers for 3 Hours"'))  //                                           ^(to)
+    .catch(console.error);
 });
 
 
@@ -49,255 +49,261 @@ client.on('ready', () => {
 //This is the code that listens for commands and sends the messages
 client.on('message', async message => {
 
-	//If the message doesn't start with the prefix (\) the bot ignores the message
-	if (!message.content.startsWith(prefix)) return;
+  	//If the message doesn't start with the prefix (\) the bot ignores the message
+  	if (!message.content.startsWith(prefix)) return;
 
-	//If the message comes from a bot the bot ignores the message
-	if (message.author.bot) return;
-
-
-	/////////////////
-	//             //
-	//  Constants  //
-	//             //
-	/////////////////
+  	//If the message comes from a bot the bot ignores the message
+  	if (message.author.bot) return;
 
 
-	//This mentions the user of the message
-	const mentionAuthor = '<@' + message.author.id + '>'
-
-	//This takes the command and splits it in an array, deleting all the spaces (e.g. "\setstatus watching a Vsauce3 video" -> args = ['\setstatus', 'watching', 'a', 'Vsauce3', 'video'])
-	const args = message.content.trim().split(/ +/g);
-
-	//This takes the first item from args, it removes the prefix and converts it to lowercase (e.g. '\sETsTatUs' -> 'setstatus')
-	const command = args[0].slice(1).toLowerCase();
-
-	//This returns true if the author of the message has a mod/admin role (Taco King, Taco Prince, Taco Knights, Taco Nobles)
-	const checkIfAdmin = message.member.roles.cache.some(role => role.name === 'Taco Nobles' || role.name === 'Taco Knights' || role.name === 'Taco Prince' || role.name === 'Taco King')
+  	/////////////////
+  	//             //
+  	//  Constants  //
+  	//             //
+  	/////////////////
 
 
+  	//This mentions the user of the message
+  	const mentionAuthor = '<@' + message.author.id + '>'
 
-	/////////////////
-	//             //
-	//  Functions  //
-	//             //
-	/////////////////
+  	//This takes the command and splits it in an array, deleting all the spaces (e.g. "\setstatus watching a Vsauce3 video" -> args = ['\setstatus', 'watching', 'a', 'Vsauce3', 'video'])
+  	const args = message.content.trim().split(/ +/g);
 
-	//this function makes an embed
-	function embedCommand(commandTitle, commandDescription) {
-		let embed = new MessageEmbed()
-		.setTitle(commandTitle)
-		.setColor(0x6b5cdf)
-		.setDescription(commandDescription);
-		message.channel.send(embed);
-		return
-	};
+  	//This takes the first item from args, it removes the prefix and converts it to lowercase (e.g. '\sETsTatUs' -> 'setstatus')
+  	const command = args[0].slice(1).toLowerCase();
 
-	//This function sets the status of the bot
-	function customStatus(statusText, presenceType) {
-		client.user.setActivity(statusText, { type: presenceType })   //The type needs to be either WATCHING, PLAYING, LISTENING OR STREAMING
-			.then(presence => console.log('Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor))  //this logs to the console (the command prompt window) the new status and the author
-			.catch(console.error);
-		return
-	};
+  	//This returns true if the author of the message has a mod/admin role (Taco King, Taco Prince, Taco Knights, Taco Nobles)
+  	const checkIfAdmin = message.member.roles.cache.some(role => role.name === 'Taco Nobles' || role.name === 'Taco Knights' || role.name === 'Taco Prince' || role.name === 'Taco King')
 
 
-	//This function is used to display the bot status confirmation dialog, and to react to it with a taco emoji and to listen to any reaction from the author of the original message and also to set the status... It's a bunch of functions blended together, really.
-	function confirmStatus(wordsToRemove) {
-		let i;
-		for (i = 0; i < wordsToRemove; i++) {
-			args.shift();
+
+  	/////////////////
+  	//             //
+  	//  Functions  //
+  	//             //
+  	/////////////////
+
+  	//this function makes an embed
+  	function embedCommand(commandTitle, commandDescription) {
+  		let embed = new MessageEmbed()
+  		.setTitle(commandTitle)
+  		.setColor(0x6b5cdf)
+  		.setDescription(commandDescription);
+  		message.channel.send(embed);
+  		return
+  	};
+
+  	//This function sets the status of the bot
+  	function customStatus(statusText, presenceType) {                                                               
+    	client.user.setActivity(statusText, { type: presenceType })   //The type needs to be either WATCHING, PLAYING, LISTENING OR STREAMING
+    	.then(presence => console.log('Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor))  //this logs to the console (the command prompt window) the new status and the author
+    	.catch(console.error);
+    	return
+  	};
+
+
+  	//This function is used to display the bot status confirmation dialog, and to react to it with a taco emoji and to listen to any reaction from the author of the original message and also to set the status... It's a bunch of functions blended together, really.
+  	function confirmStatus(wordsToRemove) {
+  		let i;
+  		for (i = 0; i < wordsToRemove; i++) {
+    		args.shift();
 		};
 
-		//This empties the botStatus variable. This is useful when the \setstatus command is used multiple times. If this weren't present, the status would be set to the old status followed by the new status
-		botStatus = '';
+  		//This empties the botStatus variable. This is useful when the \setstatus command is used multiple times. If this weren't present, the status would be set to the old status followed by the new status
+ 	 	botStatus = '';
 
-		//This gets all the arguments from args and puts a space before them and saves everything to a variable called botStatus (e.g. args = ['a', 'Vsauce3', 'video'] -> botStatus = ' a Vsauce3 video')
-		for (i = 0; i < args.length; i++) {
-			botStatus = botStatus + " " + args[i];
-		};
+  		//This gets all the arguments from args and puts a space before them and saves everything to a variable called botStatus (e.g. args = ['a', 'Vsauce3', 'video'] -> botStatus = ' a Vsauce3 video')
+  		for (i = 0; i < args.length; i++) {
+  			botStatus = botStatus + " " + args[i];    
+  		};                    
 
-		//This makes an embed sending the user the status and asking them to confirm tapping a reaction to the embed.
-		let embed = new MessageEmbed()
-		.setTitle('Set status?')
-		.setColor(0x6b5cdf)
-		.setDescription(mentionAuthor + ', to set the status to "' + statusPrefix + botStatus + '" tap 🌮. To set a different one, run **\\setstatus** again. To reset the status to its original state, run **\\resetstatus**');
-		message.channel.send(embed).then(sentEmbed => {
-			sentEmbed.react("🌮")
-			sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
-			{ max: 1, time: 30000 }).then(collected => {
-				if (collected.first().emoji.name == '🌮') {
-					customStatus(botStatus, presenceType)
-					embedCommand('Success!', 'Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor)
-				}
-			});
-		})
-	}
+  		//this makes an embed sending the user the status and asking them to confirm tapping a reaction to the embed.
+  		let embed = new MessageEmbed()
+  		.setTitle('Set status?')
+  		.setColor(0x6b5cdf)
+        .setDescription(mentionAuthor + ', to set the status to "' + statusPrefix + botStatus + '" tap 🌮. To set a different one, run **\\setstatus** again. To reset the status to its original state, run **\\resetstatus**');                                          //this sets the content of the message
+        message.channel.send(embed).then(sentEmbed => {
+        	sentEmbed.react("🌮")
 
 
+        	sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
+        	{ max: 1, time: 30000 }).then(collected => {
+        		if (collected.first().emoji.name == '🌮') {
+        			customStatus(botStatus, presenceType)
+        			embedCommand('Success!', 'Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor)
+        		}
+        	});
+        })
+    }
 
-	////////////////////
-	//                //
-	//  Commands:     //
-	//                //
-	//  \help         //
-	//  \caulk        //
-	//  \weigh        //
-	//  \twitch       //
-	//  \youtube      //
-	//  \twitter      //
-	//  \randomvideo  //
-	//  \orisit       //
-	//  \info         //
-	//  \setstatus    //
-	//  \resetstatus  //
-	//  \modhelp      //
-	//                //
-	////////////////////
 
-	if (command === 'help') {
-		embedCommand('Commands:', '**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*\'cause I don\'t think you can handle it, you can\'t handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n**\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
-	}
-	
-	if (command === 'caulk') {
-		message.channel.send('*\'cause I don\'t think you can handle it, you can\'t handle...* ***the caulk*** \nhttps://www.twitch.tv/jakeroper/clip/AbstemiousSlickFiddleheadsKappaRoss');
-		message.channel.send('*I didn\'t mean it like that... I meant to list a variety of... of tools that you use to build, and that was [...]*');
-	}
 
-	if (command === 'weigh') {
-		message.channel.send('Mmm, very good question. But more importantly... *how much does it weigh?* \nhttps://youtu.be/4OzxNLYJDsE?list=PLiyjwVB09t5zvMrlbSP78hDMfyd_LALA4&t=320');
-	}
+  	////////////////////
+  	//                //
+  	//  Commands:     //
+  	//                //
+  	//  \help         //
+  	//  \caulk        //
+  	//  \weigh        //
+  	//  \fingers      //
+  	//  \twitch       //
+  	//  \youtube      //
+  	//  \twitter      //
+  	//  \randomvideo  //
+  	//  \orisit       //
+  	//  \info         //
+  	//  \setstatus    //
+  	//  \resetstatus  //
+  	//  \modhelp      //
+  	//                //
+  	////////////////////
 
-	if (command === 'twitch') {
-		embedCommand('Twitch', 'https://www.twitch.tv/jakeroper');
-	}
+  	if (command === 'help') {
+  		embedCommand('Commands:', '**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*\'cause I don\'t think you can handle it. You can\'t handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n **\\fingers**\nHey, Vsauce. Michael here. *Where are your fingers?* \n \n**\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
+  	}
 
-	if (command === 'youtube') {
-		embedCommand('YouTube', '**Vsauce3**: \nhttps://youtube.com/vsauce3 \n \n**Jake Roper**: \nhttps://youtube.com/jakerawr');
-	}
+  	if (command === 'caulk') {
+  		message.channel.send('*\'cause I don\'t think you can handle it, you can\'t handle...* ***the caulk*** \nhttps://www.twitch.tv/jakeroper/clip/AbstemiousSlickFiddleheadsKappaRoss');
+  		message.channel.send('*I didn\'t mean it like that... I meant to list a variety of... of tools that you use to build, and that was [...]*');
+  	}
 
-	if (command === 'twitter') {
-		embedCommand('Twitter', '**Vsauce3**: \nhttps://www.twitter.com/vsaucethree \n \n**Jake Roper**: \nhttps://www.twitter.com/jakerawr');
-	}
+  	if (command === 'weigh') {
+  		message.channel.send('Mmm, very good question. But more importantly... *how much does it weigh?* \nhttps://youtu.be/4OzxNLYJDsE?list=PLiyjwVB09t5zvMrlbSP78hDMfyd_LALA4&t=320');
+  	}
 
-	if (command === 'info') {
-		embedCommand('Bot information', '**Version**: 2.2 \n \n**Released on:** 17/7/2020 *(d/m/yyyy)* \n \n**Changelog**: Added \\setstatus, a command to change the status on the fly; added \\orisit, a command that plays Moon Men in vc; added code to make role-specific commands; changed the accent colour to be the same as the profile picture; renamed \\botinfo to \\info; minor changes to existing code. \n \nFull changelog at https://montelion.gitbook.io/botsauce/changelog\n \n *Made with love by Montelion#3581*');
-	}
+  	if (command === 'fingers') {
+  		message.channel.send('Hey, Vsauce. Michael here. *Where are your fingers?* \nhttps://youtu.be/L45Q1_psDqk')
+  	}
 
-	if (command === 'randomvideo') {
-		//This sends a random video from the array vsauce3vids [the last line of code]. It chooses a random number between 0 and 1, and it multiplies it by the number of links in the array vsauce3vids. Then it rounds up the result and gets the corresponding link (e.g. if the result is 69 (nice) the bot sends the 70th link in the list, because it counts from 0).
-		message.channel.send('Here\'s your randomly selected Vsauce3 video:\n' + vsauce3vids[Math.floor(Math.random() * vsauce3vids.length)]);
-	}
+  	if (command === 'twitch') {
+  		embedCommand('Twitch', 'https://www.twitch.tv/jakeroper');
+  	}
 
-	if (command === 'orisit') {
-		if (!message.guild) return;
-		if (!message.member.voice.channel){
-			embedCommand('Error!', mentionAuthor + ', you need to join a voice channel first!')
-		}
-		
-		if (message.member.voice.channel) {
-			const connection = await message.member.voice.channel.join();
-			const vsauceTheme = connection.play(ytdl('https://www.youtube.com/watch?v=TN25ghkfgQA', { filter: 'audioonly' }));
-			embedCommand('Now playing:', '"Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme) \n*Requested by ' + mentionAuthor + '.*')
+  	if (command === 'youtube') {
+  		embedCommand('YouTube', '**Vsauce3**: \nhttps://youtube.com/vsauce3 \n \n**Jake Roper**: \nhttps://youtube.com/jakerawr');
+  	}
 
-			vsauceTheme.on('finish', () => {
-				message.guild.me.voice.channel.leave();
-			})
-		}
-	}
+  	if (command === 'twitter') {
+  		embedCommand('Twitter', '**Vsauce3**: \nhttps://www.twitter.com/vsaucethree \n \n**Jake Roper**: \nhttps://www.twitter.com/jakerawr');
+  	}
 
-	if (command === 'setstatus') {
+  	if (command === 'info') {
+  		embedCommand('Bot information', '**Version**: 2.3.0 \n \n**Released on:** 20/7/2020 *(d/m/yyyy)* \n \n**Changelog:** https://montelion.gitbook.io/botsauce/changelog \n \n **Source code:** https://github.com/Montelion/BotSauce \n \n *Made with love by Montelion#3581*');
+  	}
 
-		if (checkIfAdmin) {  // returns true if the member has at least one of the roles
+  	if (command === 'randomvideo') {
+  		//This sends a random video from the array vsauce3vids [the last line of code]. It chooses a random number between 0 and 1, and it multiplies it by the number of links in the array vsauce3vids. Then it rounds up the result and gets the corresponding link (e.g. if the result is 69 (nice) the bot sends the 70th link in the list, because it counts from 0).
+  		message.channel.send('Here\'s your randomly selected Vsauce3 video:\n' + vsauce3vids[Math.floor(Math.random() * vsauce3vids.length)]);
+  	}
 
-			if (!args[1]) {
-				return embedCommand('Error!', 'You didn\'t provide any arguments, ' + mentionAuthor + '! You need to type **\\setstatus** followed by the status you want to set.');
-			}
+  	if (command === 'orisit') {
+  		if (!message.guild) return;
+  		if (!message.member.voice.channel){
+  			embedCommand('Error!', mentionAuthor + ', you need to join a voice channel first!')
+  		}
+  		if (message.member.voice.channel) {
+  			const connection = await message.member.voice.channel.join();
+  			const vsauceTheme = connection.play(ytdl('https://www.youtube.com/watch?v=TN25ghkfgQA', { filter: 'audioonly' }));
+  			embedCommand('Now playing:', '"Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme) \n*Requested by ' + mentionAuthor + '.*')
 
-			else if (args[1].toLowerCase() === 'watching') {
-				statusPrefix = 'Watching'
-				presenceType = 'WATCHING';
-				confirmStatus(2);
-			}
+  			vsauceTheme.on('finish', () => {
+  				message.guild.me.voice.channel.leave();
+  			})
+  		}
+  	}
 
-			else if (args[1].toLowerCase() === 'playing') {
-				statusPrefix = 'Playing'
-				presenceType = 'PLAYING';
-				confirmStatus(2);
-			}
+  	if (command === 'setstatus') {
 
-			else if (args[1].toLowerCase() === 'streaming') {
-				statusPrefix = 'Streaming'
-				presenceType = 'STREAMING';
-				confirmStatus(2);
-			}
+    	if (checkIfAdmin) {  // returns true if the member has at least one of the roles
 
-			else if (args[1].toLowerCase() === 'listening') {
-				statusPrefix = 'Listening to'
-				presenceType = 'LISTENING';
-				confirmStatus(3);
-			}
+    		if (!args[1]) {
+    			return embedCommand('Error!', 'You didn\'t provide any arguments, ' + mentionAuthor + '! You need to type **\\setstatus** followed by the status you want to set.');
+    		}
 
-			else {
-				embedCommand('Error!', mentionAuthor + ', the status needs to start with *watching*, *playing*, *streaming*, or *listening to*.');
-			}
-		}
+    		else if (args[1].toLowerCase() === 'watching') {
+    			statusPrefix = 'Watching'
+    			presenceType = 'WATCHING';
+    			confirmStatus(2);
+    		}
 
-		else {
-			embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
-		}
-	}
+    		else if (args[1].toLowerCase() === 'playing') {
+    			statusPrefix = 'Playing'
+    			presenceType = 'PLAYING';
+    			confirmStatus(2);
+    		}
 
-	//	THE COMMAND \CONFIRMSTATUS HAS BEEN DEPRECATED IN FAVOR OF A REACTION BASED CONFIRMATION (v2.2). For this reason it has been commented out.
-	//
-	//	if (command === 'confirmstatus') {
-	//
-	//		if (checkIfAdmin) {  // returns true if the member has at least one of the roles
-	//			customStatus(botStatus, presenceType)
-	//			embedCommand('Success!', 'Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor)
-	//		}
-	//
-	//		else {
-	//			embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
-	//		}
-	//	}
+    		else if (args[1].toLowerCase() === 'streaming') {
+    			statusPrefix = 'Streaming'
+    			presenceType = 'STREAMING';
+    			confirmStatus(2);
+    		}
+
+    		else if (args[1].toLowerCase() === 'listening') {
+    			statusPrefix = 'Listening to'
+    			presenceType = 'LISTENING';
+    			confirmStatus(3);
+    		}
+
+    		else {
+    			embedCommand('Error!', mentionAuthor + ', the status needs to start with *watching*, *playing*, *streaming*, or *listening to*.');
+    		}
+    	}   
+
+    	else {
+        	  embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
+      	}
+  	}
+
+  	//THE COMMAND \CONFIRMSTATUS HAS BEEN DEPRECATED IN FAVOR OF A REACTION BASED CONFIRMATION (v2.2). For this reason it has been commented out.
+
+  	//  if (command === 'confirmstatus') {
+  	//
+  	//        if (checkIfAdmin) {  // returns true if the member has at least one of the roles
+  	//            customStatus(botStatus, presenceType)
+  	//            embedCommand('Success!', 'Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor)
+  	//        }
+
+  	//        else {
+  	//           embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
+  	//        }
+  	//    }
 
 	if (command === 'resetstatus') {
 
-		if (checkIfAdmin) {
-			let embed = new MessageEmbed()
-			.setTitle('Reset status?')
-			.setColor(0x6b5cdf)
-			.setDescription(mentionAuthor + ', to reset the status to "Listening to \\help | Watching Michael Says Prime Numbers for 3 Hours" tap 🌮.');
-			message.channel.send(embed).then(sentEmbed => {
-				sentEmbed.react("🌮")
+    	if (checkIfAdmin) {
+    		let embed = new MessageEmbed()
+        	.setTitle('Reset status?')
+        	.setColor(0x6b5cdf)
+    	    .setDescription(mentionAuthor + ', to reset the status to "Listening to \\help | Watching Michael Says Prime Numbers for 3 Hours" tap 🌮.');
+    	    message.channel.send(embed).then(sentEmbed => {
+    	    	sentEmbed.react("🌮")
 
 
-				sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
-				{ max: 1, time: 30000 }).then(collected => {
-					if (collected.first().emoji.name == '🌮') {
-						customStatus('\\help | Watching Michael Says Prime Numbers for 3 Hours', 'LISTENING')
-						embedCommand('Success!','Status reset to "\\help | Watching Michael Says Prime Numbers for 3 Hours" by ' + mentionAuthor)
-					}
-				});
-			})
-		}
+    	    	sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
+        		{ max: 1, time: 30000 }).then(collected => {
+        			if (collected.first().emoji.name == '🌮') {
+        				customStatus('\\help | Watching Michael Says Prime Numbers for 3 Hours', 'LISTENING')
+        				embedCommand('Success!','Status reset to "\\help | Watching Michael Says Prime Numbers for 3 Hours" by ' + mentionAuthor)
+        			}
+      	 		});
+       		})
+        } 
 
-		else {
-			embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
-		}
-	}
+        else {
+           embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
+       	}
+   	}
 
-	if (command === 'modhelp') {
+   	if (command === 'modhelp') {
 
-		if (checkIfAdmin) {
-			embedCommand('Mod commands:', '**\\setstatus** \nSets a custom status for the bot.\n*Usage: \\setstatus followed by the status you want to set.* \n \n**\\resetstatus** \nResets the status to its original state. \n \n**\\info**: Shows the bot\'s version, release date, and changelog.')
-		}
+   	if (checkIfAdmin) {
+   		embedCommand('Mod commands:', '**\\setstatus** \nSets a custom status for the bot.\n*Usage: \\setstatus followed by the status you want to set.* \n \n**\\resetstatus** \nResets the status to its original state. \n \n**\\info**: Shows the bot\'s version, release date, and changelog.')
+   	}
 
-		else {
-			embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
-		}
-	}
+   	else {
+        embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
+    }
+   }
 });
 
 
