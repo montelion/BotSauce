@@ -156,7 +156,7 @@ client.on('message', async message => {
 	////////////////////
 
 	if (command === 'help') {
-		embedCommand('Commands:', '**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*I don\'t think you can handle it. I don\'t think you can handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n**\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
+		embedCommand('Commands:', '**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*\'cause I don\'t think you can handle it, you can\'t handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n**\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
 	}
 	
 	if (command === 'caulk') {
