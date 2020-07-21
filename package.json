@@ -2,7 +2,7 @@
   "name": "BotSauce",
   "main": "server.js",
   "description": "Botsauce",
-  "version": "2.3.0",
+  "version": "3.0.0",
   "private": false,
   "engines": {
     "node": "12.*"
@@ -20,6 +20,6 @@
     "@discordjs/opus": "*",
     "ytdl-core": "*"
   },
-  "author": "Montelion#",
+  "author": "Montelion#3581",
   "license": "GNU General Public License v3.0"
 }
