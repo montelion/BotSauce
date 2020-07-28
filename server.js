@@ -53,7 +53,7 @@ app.listen(port, () => console.log(`The server is now running on port ${port}`))
 
 
 //Put your bot token in place of 'your bot token here'
-const botToken = 'NzMxMDg3Nzg4ODI4Nzg2Njg5.XwnnRA.GUk9NAHx1aQCgyv70MAbKxn2QvM'
+const botToken = 'your bot token here'
 
 
 
