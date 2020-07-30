@@ -2,7 +2,7 @@
   "name": "BotSauce",
   "main": "server.js",
   "description": "Botsauce",
-  "version": "3.2.0",
+  "version": "3.3.0",
   "private": false,
   "engines": {
     "node": "12.*"
@@ -15,11 +15,17 @@
     "url": "https://github.com/Montelion/BotSauce"
   },
   "dependencies": {
-    "discord.js": "^12.2.0",
-    "ffmpeg-static": "*",
+    "@cloudant/cloudant": "^3.0.2",
     "@discordjs/opus": "*",
+    "body-parser": "^1.17.x",
+    "cfenv": "^1.0.x",
+    "discord.js": "^12.2.0",
+    "dotenv": "*",
+    "express": "^4.15.x",
+    "ffmpeg-static": "*",
+    "mongodb": "^3.0.10",
     "ytdl-core": "*"
   },
   "author": "Monty#3581",
-  "license": "GNU General Public License v3.0"
+  "license": "GNU GPL3"
 }
