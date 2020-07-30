@@ -15,7 +15,6 @@
     "url": "https://github.com/Montelion/BotSauce"
   },
   "dependencies": {
-    "@cloudant/cloudant": "^3.0.2",
     "@discordjs/opus": "*",
     "body-parser": "^1.17.x",
     "cfenv": "^1.0.x",
@@ -23,7 +22,6 @@
     "dotenv": "*",
     "express": "^4.15.x",
     "ffmpeg-static": "*",
-    "mongodb": "^3.0.10",
     "ytdl-core": "*"
   },
   "author": "Monty#3581",
