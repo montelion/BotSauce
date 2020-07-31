@@ -51,7 +51,7 @@ const twitchRoleID = '715427352103878679'
 const twitterRoleID = '715427437206568970'
 const ytRoleID = '715610520341839882'
 
- 
+ const serverID = '731234714043678750'
 
 
 
@@ -82,25 +82,44 @@ client.on('ready', () => {
   // Defines the channel in which the bot sends the Twitch notification
   const twitchChannel = client.channels.cache.get('715428037105287188')
 
+  //Used for testing, not on the main server
+  const testChannel = client.channels.cache.get('731463300113760316')
+
+
+
 
   app.post("/hook", (req, res) => {
 
+    //this checks if the key in the request matches the one in the .env file. If it doesn't, it logs to the console a warning. If it does, it runs the other code.
+    if (req.body.key !== process.env.REQUEST_KEY) {
+      console.log('Someone tried to send a POST request with the key ' + req.body.key + '\n The key did not match the one in the .env file, so the request was ignored.')
+      res.status(200).end() // Answers to the webhook with OK
+    }
 
-  if (req.body.platform === 'twitch') {
-    twitchChannel.send('Hey ' + '<@&' + twitchRoleID + '>' + ', JakeRoper is now live on https://www.twitch.tv/jakeroper​ ! LET\'S HANG OUT!');
-  }
+    else {
+      
+      if (req.body.platform === 'twitch') {
+        twitchChannel.send('Hey ' + '<@&' + twitchRoleID + '>' + ', JakeRoper is now live on https://www.twitch.tv/jakeroper​ ! LET\'S HANG OUT!');
+      }
 
-  //CHANGEBVACKTHETWITTERCHANNEL
-  if (req.body.platform === 'twitter') {
-    twitterChannel.send('Hey ' + '<@&' + twitterRoleID + '>' + ', **' + req.body.username + '** just posted a new tweet! \n' + req.body.link);
-  }
+  
+      if (req.body.platform === 'twitter') {
+        twitterChannel.send('Hey ' + '<@&' + twitterRoleID + '>' + ', **' + req.body.username + '** just posted a new tweet! \n' + req.body.link);
+      }
 
-  if (req.body.platform === 'youtube') {
-    ytChannel.send('Hey ' + '<@&' + ytRoleID + '>'+ ', ' + req.body.channel + ' has just uploaded ' + req.body.video + '! \n' + req.body.link);
-  }
+      if (req.body.platform === 'youtube') {
+        ytChannel.send('Hey ' + '<@&' + ytRoleID + '>'+ ', ' + req.body.channel + ' has just uploaded ' + req.body.video + '! \n' + req.body.link);
+      }
+
+      //used for testing
+      if (req.body.platform === 'test') {
+        testChannel.send(req.body.text)
+      }
+
     
 
-  res.status(200).end() // Answers to the webhook with OK
+      res.status(200).end() // Answers to the webhook with OK
+    }
 
   })
 
@@ -228,8 +247,6 @@ client.on('message', async message => {
 
 
 
-
-
   //deletes a message if it contains swear words, and sends it in logs
   let i
   for (i = 0; i < swearWords.length; i++) {
@@ -248,6 +265,25 @@ client.on('message', async message => {
     }
   }
 
+  function getUsers() {
+    
+    // Get the Guild and store it under the variable "list"
+    const list = message.guilds.get("731234714043678750"); 
+
+    // Iterate through the collection of GuildMembers from the Guild getting the username property of each member 
+    list.members.forEach(member => console.log(member.user.username));
+    const allUsers = client.users
+
+    /*
+    .then(r => {
+      r.members.array().forEach(r => {
+        let username = `${r.user.username}#${r.user.discriminator}`;
+        console.log(`${username}`);
+      });
+    })
+    */
+  }
+
 
 
 
@@ -262,6 +298,11 @@ client.on('message', async message => {
   //  Commands  //
   //            //
   ////////////////
+
+  if (command === 'test') {
+    getUsers();
+    embedCommand('Check the console', '^')
+  }
 
   if (command === 'help') {
     embedCommand('Commands:', '**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*\'cause I don\'t think you can handle it. You can\'t handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n **\\fingers**\nHey, Vsauce. Michael here. *Where are your fingers?* \n \n **\\succ**\n***S  U  C  C*** \n \n **\\bazinga** \n ***B A Z I N G A*** \n \n **\\stop** \n *Stops whatever the bot is playing in VC* \n \n **\\jakerobot**\nLinks to AI-generated tweets made using tweets by @jakerawr \n \n **\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
