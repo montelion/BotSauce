@@ -1,5 +1,5 @@
 /*
-BotSauce v3.3.0, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.4.1, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Montelion#3581
 
 This program is free software: you can redistribute it and/or modify
