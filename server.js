@@ -51,8 +51,6 @@ const twitchRoleID = '715427352103878679'
 const twitterRoleID = '715427437206568970'
 const ytRoleID = '715610520341839882'
 
- const serverID = '731234714043678750'
-
 
 
 app.listen(port, () => console.log(`The server is now running on port ${port}`))
