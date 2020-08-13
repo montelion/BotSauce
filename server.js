@@ -1,5 +1,5 @@
 /*
-BotSauce v3.3.1, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.5, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Montelion#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -20,6 +20,10 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 
 'use strict';
+
+const version = '3.5'
+const releaseDate = '12/8/2020'
+
 const Discord = require('discord.js');
 const { Client, MessageEmbed } = require('discord.js');
 const client = new Discord.Client();
@@ -52,7 +56,6 @@ const twitterRoleID = '715427437206568970'
 const ytRoleID = '715610520341839882'
 
 
-
 app.listen(port, () => console.log(`The server is now running on port ${port}`))
 
 
@@ -80,6 +83,12 @@ client.on('ready', () => {
   // Defines the channel in which the bot sends the Twitch notification
   const twitchChannel = client.channels.cache.get('715428037105287188')
 
+  //A super secret channel
+  const complaintsChannel = client.channels.cache.get('738836123190558791')
+
+  //Super secret channel n 2
+  const banAppealChannel = client.channels.cache.get('739826940873277491')
+
   //Used for testing, not on the main server
   const testChannel = client.channels.cache.get('731463300113760316')
 
@@ -97,7 +106,7 @@ client.on('ready', () => {
     else {
       
       if (req.body.platform === 'twitch') {
-        twitchChannel.send('Hey ' + '<@&' + twitchRoleID + '>' + ', JakeRoper is now live on https://www.twitch.tv/jakeroper​ ! LET\'S HANG OUT!');
+        twitchChannel.send('Hey ' + '<@&' + twitchRoleID + '>' + ', JakeRoper is now live on https://www.twitch.tv/jakeroper ! LET\'S HANG OUT!');
       }
 
   
@@ -108,6 +117,31 @@ client.on('ready', () => {
       if (req.body.platform === 'youtube') {
         ytChannel.send('Hey ' + '<@&' + ytRoleID + '>'+ ', ' + req.body.channel + ' has just uploaded ' + req.body.video + '! \n' + req.body.link);
       }
+
+      if (req.body.platform === 'moderation') {
+
+        if (req.body.type === 'complaint') {
+          
+          let embed = new MessageEmbed()
+          .setTitle('New complaint')
+          .setColor(0x6b5cdf)
+          .setDescription('**Username of who the complaint is about** \n' + req.body.about + '\n \n**Username of the person making the complaint**\n' + (req.body.author || '*No username provided*') + '\n \n**Offense**\n' + req.body.offense + '\n \n**Description of offense**\n' + req.body.offenseDescription + '**\n \nEvidence (message links)**\n' + req.body.evidenceLinks + '\n \n**Evidence (screenshots, in case of deleted messages)**\n' + (req.body.evidenceImgs || '*No screenshots provided*'));
+          complaintsChannel.send(embed);
+
+        }
+
+        if (req.body.type === 'banAppeal') {
+          
+          let embed = new MessageEmbed()
+          .setTitle('New ban appeal')
+          .setColor(0x6b5cdf)
+          .setDescription('**What is your username on Discord?** \n' + req.body.username + '\n \n**Why were you banned?**\n' + req.body.banReason + '\n \n**Why do you think you deserve a second chance in the community?**\n' + req.body.secondChance);
+          banAppealChannel.send(embed)
+
+        }
+        
+      }
+
 
       //used for testing
       if (req.body.platform === 'test') {
@@ -141,6 +175,7 @@ client.on("guildMemberAdd", member => {
 //This is the code that listens for commands and sends the messages
 client.on('message', async message => {
 
+  if (!message.content.startsWith(prefix)) return;
   
   /////////////////
   //             //
@@ -158,8 +193,11 @@ client.on('message', async message => {
   //This takes the first item from args, it removes the prefix and converts it to lowercase (e.g. '\sETsTatUs' -> 'setstatus')
   const command = args[0].slice(1).toLowerCase();
 
-  //This returns true if the author of the message has a mod/admin role (Taco King, Taco Prince, Taco Knights, Taco Nobles)
-  const checkIfAdmin = message.member.roles.cache.some(role => role.name === 'Taco Nobles' || role.name === 'Taco Knights' || role.name === 'Taco Prince' || role.name === 'Taco King')
+  //This returns true if the author of the message has a mod/admin role (Taco King, Taco Bell, Taco Prince, Taco Knights, Taco Nobles)
+  const checkIfAdmin = message.member.roles.cache.some(role => role.name === 'Taco Knights' || role.name === 'Taco Prince' || role.name === 'Taco Bell' || role.name === 'Taco King')
+
+  //This returns true if the author of the message has an admin role (Taco King, Taco Bell, Taco Prince, Taco Knights)
+  const checkIfMod = message.member.roles.cache.some(role => role.name === 'Taco Nobles' || role.name === 'Taco Knights' || role.name === 'Taco Prince' || role.name === 'Taco Bell' || role.name === 'Taco King')
 
 
 
@@ -245,7 +283,7 @@ client.on('message', async message => {
 
 
 
-  //deletes a message if it contains swear words, and sends it in logs
+  //deletes a message if it contains swear words, and notifies the admins through #logs
   let i
   for (i = 0; i < swearWords.length; i++) {
     if (message.content.toLowerCase().includes(swearWords[i])) {
@@ -263,26 +301,6 @@ client.on('message', async message => {
     }
   }
 
-  function getUsers() {
-    
-    // Get the Guild and store it under the variable "list"
-    const list = message.guilds.get("731234714043678750"); 
-
-    // Iterate through the collection of GuildMembers from the Guild getting the username property of each member 
-    list.members.forEach(member => console.log(member.user.username));
-    const allUsers = client.users
-
-    /*
-    .then(r => {
-      r.members.array().forEach(r => {
-        let username = `${r.user.username}#${r.user.discriminator}`;
-        console.log(`${username}`);
-      });
-    })
-    */
-  }
-
-
 
 
 
@@ -298,8 +316,51 @@ client.on('message', async message => {
   ////////////////
 
   if (command === 'test') {
-    getUsers();
-    embedCommand('Check the console', '^')
+    console.log('placeholder for command')
+  }
+
+  if (command === 'ban') {
+
+  	const userToBan = message.mentions.members.first()
+
+  	if (checkIfAdmin) {  // returns true if the member has at least one of the roles
+  		if (!userToBan) {
+            embedCommand('Error!', 'You didn\'t mention any user, ' + mentionAuthor + '! Example: **\\ban** *usertoban* reason');
+        }
+    
+        if(!userToBan.bannable) 
+      return embedCommand('Error!', 'I can\'t ban that user');
+
+    let banReason = args.slice(2).join(' ');
+    if(!banReason) banReason = "No reason provided";
+
+    	let embed = new MessageEmbed()
+        .setTitle('Ban user?')
+        .setColor(0x6b5cdf)
+        .setDescription('**User:** \n<@' + userToBan + '> \n\n**Reason** ***(visible to the banned user)*** \n' + (banReason || '*No reason provided*') + '\n \n' + mentionAuthor + ', To confirm, tap 🌮');
+        message.channel.send(embed).then(sentEmbed => {
+            sentEmbed.react("🌮")
+
+
+            sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
+            { max: 1, time: 30000 }).then(collected => {
+                if (collected.first().emoji.name == '🌮') {
+                    embedCommand('Great!', '<@' + userToBan + '> has been banned by ' + mentionAuthor)
+  	                userToBan.send('You have been banned from the Vsauce 3 Discord server. \n \n**Reason** \n' + banReason + '\n \n If you\'d like to send a ban appeal, follow this link: \nhttps://docs.google.com/forms/d/e/1FAIpQLSf2MK_S_0G2B1PhmAq9ieF40S-7TJ1SOCrSBik4ByUr1PoDhA/viewform?usp=sf_link')
+  	                setTimeout(() => {  userToBan.ban(banReason) }, 2000)
+                    ;
+  	    	       
+                }
+            });
+        })
+
+      }
+
+
+    else {
+      embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
+    }
+
   }
 
   if (command === 'help') {
@@ -358,7 +419,7 @@ client.on('message', async message => {
   }
 
   if (command === 'info') {
-    embedCommand('Bot information', '**Version**: 3.3.0 \n \n**Released on:** 29/7/2020 *(d/m/yyyy)* \n \n**Changelog:** https://montelion.gitbook.io/botsauce/changelog \n \n **Source code:** https://github.com/Montelion/BotSauce \n \n *Made with love by Monty#3581*');
+    embedCommand('Bot information', '**Version**: ' + version + ' \n \n**Released on:** ' + releaseDate + ' *(d/m/yyyy)* \n \n**Changelog:** https://montelion.gitbook.io/botsauce/changelog \n \n **Source code:** https://github.com/Montelion/BotSauce \n \n *Made with love by Monty#3581*');
   }
 
   if (command === 'randomvideo') {
@@ -376,7 +437,7 @@ client.on('message', async message => {
     
   if (command === 'setstatus') {
 
-    if (checkIfAdmin) {  // returns true if the member has at least one of the roles
+    if (checkIfMod) {  // returns true if the member has at least one of the roles
 
       if (!args[1]) {
         return embedCommand('Error!', 'You didn\'t provide any arguments, ' + mentionAuthor + '! You need to type **\\setstatus** followed by the status you want to set.');
@@ -420,7 +481,7 @@ client.on('message', async message => {
 
   if (command === 'confirmstatus') {
 
-    if (checkIfAdmin) {  // returns true if the member has at least one of the roles
+    if (checkIfMod) {  // returns true if the member has at least one of the roles
       customStatus(botStatus, presenceType)
       embedCommand('Success!', 'Status set to "' + statusPrefix + botStatus + '" by ' + mentionAuthor)
     }
@@ -433,7 +494,7 @@ client.on('message', async message => {
 
   if (command === 'resetstatus') {
 
-    if (checkIfAdmin) {
+    if (checkIfMod) {
       let embed = new MessageEmbed()
         .setTitle('Reset status?')
         .setColor(0x6b5cdf)
@@ -458,7 +519,7 @@ client.on('message', async message => {
 
     if (command === 'modhelp') {
 
-    if (checkIfAdmin) {
+    if (checkIfMod) {
       embedCommand('Mod commands:', '**\\setstatus** \nSets a custom status for the bot.\n*Usage: \\setstatus followed by the status you want to set.* \n \n**\\resetstatus** \nResets the status to its original state. \n \n**\\info**: Shows the bot\'s version, release date, and changelog.')
     }
 
