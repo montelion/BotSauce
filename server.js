@@ -1,5 +1,5 @@
 /*
-BotSauce v3.5, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.6, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Montelion#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -21,14 +21,17 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '3.5'
-const releaseDate = '12/8/2020'
+const version = '3.6'
+const releaseDate = '16/8/2020'
 
 const Discord = require('discord.js');
 const { Client, MessageEmbed } = require('discord.js');
 const client = new Discord.Client();
 const guild = new Discord.Guild();
 const ytdl = require('ytdl-core');
+const request = require('request');
+const express = require("express")
+const bodyParser = require("body-parser")
 
 require('dotenv').config();
 
@@ -43,8 +46,7 @@ const swearWords = require('./swearWords.js')
 const vsauce3vids = require('./vsauce3vids.js')
 const jakeRobotTweets = require('./jakeRobotTweets.js')
 
-const express = require("express")
-const bodyParser = require("body-parser")
+
 const app = express()
 const port = process.env.PORT || 3000
 app.use(bodyParser.json())
@@ -55,10 +57,16 @@ const twitchRoleID = '715427352103878679'
 const twitterRoleID = '715427437206568970'
 const ytRoleID = '715610520341839882'
 
+//some stuff for the twitch API
+let parsedRefreshTokenBody = ""
+let bearerToken = parsedRefreshTokenBody.token || process.env.TWITCH_BEARERTOKEN
+const refreshToken = process.env.TWITCH_REFRESHTOKEN
+const callbackUrl = process.env.TWITCH_CALLBACKURL
+const clientID = process.env.TWITCH_CLIENT_ID
+
+
 
 app.listen(port, () => console.log(`The server is now running on port ${port}`))
-
-
 
 process.on('unhandledRejection', error => console.error('Uncaught Promise Rejection', error));
 
@@ -73,6 +81,47 @@ client.on('ready', () => {
   client.user.setActivity('\\help | Watching Michael Says Prime Numbers for 3 Hours', { type: 'LISTENING' })  //The type needs to be either WATCHING, PLAYING, LISTENING OR STREAMING
   .then(presence => console.log('Status set to "Listening to \\help | Watching Michael Says Prime Numbers for 3 Hours"'))  //                                           ^(to)
   .catch(console.error);
+
+
+
+
+  const twitchWebHookSubscribeConfig = {
+    url: 'https://api.twitch.tv/helix/webhooks/hub',
+    method: 'GET',
+    headers: {
+      'Client-ID': clientID,
+      'Content-Type': 'application/json',
+      'Authorization': 'Bearer ' + bearerToken
+    },
+    body: JSON.stringify({
+        'hub.mode':'subscribe',
+        'hub.topic':'https://api.twitch.tv/helix/streams?user_id=59125907',
+        'hub.callback':callbackUrl,
+        'hub.lease_seconds':'864000'
+      })
+  };
+
+  request.post(twitchWebHookSubscribeConfig, function (error, response, body) {
+
+    console.error('error:', error); 
+    console.log('statusCode:', response && response.statusCode); 
+    console.log('body:', JSON.stringify(body));
+  });
+
+
+
+  app.get('/hook', (req, res) => {
+    
+    let mode = req.query['hub.mode'];
+    let challenge = req.query['hub.challenge'];
+
+    if (mode === 'subscribe') {
+      console.log('WEBHOOK_VERIFIED');
+      res.json({"hub.challenge":challenge});
+    }   
+  });
+
+
 
   // Defines the channel in which the bot sends the YouTube notification
   const ytChannel = client.channels.cache.get('715610681495519374')
@@ -96,19 +145,58 @@ client.on('ready', () => {
 
 
   app.post("/hook", (req, res) => {
+    
+    if(req.body.data[0].type === 'live') {
+
+      res.status(200).end()
+
+      const checkGameNameConfig = {
+        url: 'https://api.twitch.tv/helix/games?id=' + req.body.data[0].game_id,
+        method: 'GET',
+        headers: {
+          'Client-ID': clientID,
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + bearerToken
+        }
+      }
+
+      request.get(checkGameNameConfig, function (error, response, body) {
+        //let parsedBody = JSON.parse(body)
+        console.error('error:', error); 
+        console.log('statusCode:', response && response.statusCode); 
+        console.log('body:', JSON.stringify(body));
+        const parsedBody = JSON.parse(body);
+        console.log(parsedBody.data[0].name)
+        
+
+        let twitchLiveEmbed = new MessageEmbed()
+        .setColor(0x6b5cdf)
+        .setTitle(req.body.data[0].title)
+        .setURL('https://twitch.tv/jakeroper')
+        .setImage(req.body.data[0].thumbnail_url)
+        .setAuthor('JakeRoper', 'https://images-ext-1.discordapp.net/external/PD-weNTsNfEueNNYPdnV3601LzqFrzR5WeDXppDVz3I/https/static-cdn.jtvnw.net/jtv_user_pictures/jakeroper-profile_image-1bcf7b0eda6d5b90-300x300.jpeg', 'https://twitch.tv/jakeroper')
+        .setThumbnail('https://images-ext-1.discordapp.net/external/PD-weNTsNfEueNNYPdnV3601LzqFrzR5WeDXppDVz3I/https/static-cdn.jtvnw.net/jtv_user_pictures/jakeroper-profile_image-1bcf7b0eda6d5b90-300x300.jpeg')
+        .addFields(
+          { name: 'Game', value: parsedBody.data[0].name, inline: true },
+          { name: 'Viewers', value: req.body.data[0].viewer_count, inline: true },
+        )
+    
+        twitchChannel.send('Hey ' + '<@&' + twitchRoleID + '>' + ' **JakeRoper** is now live on Twitch! Let\'s hang out! \nhttps://twitch.tv/jakeroper', twitchLiveEmbed);
+      });     
+    }
 
     //this checks if the key in the request matches the one in the .env file. If it doesn't, it logs to the console a warning. If it does, it runs the other code.
-    if (req.body.key !== process.env.REQUEST_KEY) {
+    else if (req.body.key !== process.env.REQUEST_KEY) {
       console.log('Someone tried to send a POST request with the key ' + req.body.key + '\n The key did not match the one in the .env file, so the request was ignored.')
       res.status(200).end() // Answers to the webhook with OK
     }
 
     else {
-      
+      /* No longer needed 
       if (req.body.platform === 'twitch') {
         twitchChannel.send('Hey ' + '<@&' + twitchRoleID + '>' + ', JakeRoper is now live on https://www.twitch.tv/jakeroper ! LET\'S HANG OUT!');
       }
-
+      */
   
       if (req.body.platform === 'twitter') {
         twitterChannel.send('Hey ' + '<@&' + twitterRoleID + '>' + ', **' + req.body.username + '** just posted a new tweet! \n' + req.body.link);
@@ -315,10 +403,23 @@ client.on('message', async message => {
   //            //
   ////////////////
 
+  /*
   if (command === 'test') {
-    console.log('placeholder for command')
-  }
 
+    let twitchLiveEmbed = new MessageEmbed()
+    .setColor(0x6b5cdf)
+    .setTitle('StreamTitle')
+    .setURL('https://twitch.tv/jakeroper')
+    .setAuthor('JakeRoper', 'https://images-ext-1.discordapp.net/external/PD-weNTsNfEueNNYPdnV3601LzqFrzR5WeDXppDVz3I/https/static-cdn.jtvnw.net/jtv_user_pictures/jakeroper-profile_image-1bcf7b0eda6d5b90-300x300.jpeg', 'https://twitch.tv/jakeroper')
+    .setThumbnail('https://images-ext-1.discordapp.net/external/PD-weNTsNfEueNNYPdnV3601LzqFrzR5WeDXppDVz3I/https/static-cdn.jtvnw.net/jtv_user_pictures/jakeroper-profile_image-1bcf7b0eda6d5b90-300x300.jpeg')
+    .addFields(
+      { name: 'Game', value: 'GameName', inline: true },
+      { name: 'Viewers', value: 'ViewerCount', inline: true },
+    )
+    .setImage('https://images-ext-1.discordapp.net/external/2V4pphZzBZV2hYr2_ZfYOQ48ZrRRgWIBfJNabu6Es9k/%3Fr%3D78147/https/static-cdn.jtvnw.net/previews-ttv/live_user_jakeroper-320x180.jpg')
+    message.channel.send('Hey ' + '<@&' + twitchRoleID + '>' + ' **JakeRoper** is now live on Twitch! Let\'s hang out! \nhttps://twitch.tv/jakeroper', twitchLiveEmbed);
+  }
+  */
   if (command === 'ban') {
 
   	const userToBan = message.mentions.members.first()
@@ -519,13 +620,58 @@ client.on('message', async message => {
 
     if (command === 'modhelp') {
 
-    if (checkIfMod) {
-      embedCommand('Mod commands:', '**\\setstatus** \nSets a custom status for the bot.\n*Usage: \\setstatus followed by the status you want to set.* \n \n**\\resetstatus** \nResets the status to its original state. \n \n**\\info**: Shows the bot\'s version, release date, and changelog.')
+      if (checkIfMod) {
+        embedCommand('Mod commands:', '**\\setstatus** \nSets a custom status for the bot.\n*Usage: \\setstatus followed by the status you want to set.* \n \n**\\resetstatus** \nResets the status to its original state. \n \n**\\info**: Shows the bot\'s version, release date, and changelog.')
+      }
+
+      else {
+        embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
+      }
     }
 
-    else {
-      embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
+
+    if (command === 'refreshtokens') {
+      
+      if (checkIfAdmin) {
+      let embed = new MessageEmbed()
+        .setTitle('Generate new tokens?')
+        .setColor(0x6b5cdf)
+        .setDescription(mentionAuthor + ', to generate new tokens for the Twitch API, tap 🌮.\n**DON\'T RUN THIS ON A CHAT ACCESSIBLE TO THE PUBLIC!!!**');
+        message.channel.send(embed).then(sentEmbed => {
+          sentEmbed.react("🌮")
+
+          sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
+          { max: 1, time: 30000 }).then(collected => {
+            if (collected.first().emoji.name == '🌮') {
+              
+              const refreshTokenConfig = {
+                url: 'https://twitchtokengenerator.com/api/refresh/' + refreshToken,
+                method: 'PING'
+              };
+
+              request.post(refreshTokenConfig, function (error, response, refreshTokenBody) {
+    
+                console.error('error:', error); 
+                console.log('statusCode:', response && response.statusCode); 
+                console.log('body:', JSON.stringify(refreshTokenBody));
+            
+                const parsedRefreshTokenBody = JSON.parse(refreshTokenBody)
+            
+                embedCommand('Success!', 'The tokens have been refreshed successfully! \nHere are the new tokens **(DON\'T SHARE THEM WITH ANYONE)**:\n\n**Bearer Token**\n' + parsedRefreshTokenBody.token + '\n\n**Refresh Token**\n' + parsedRefreshTokenBody.refresh + '\n\n**Client ID**\n' + parsedRefreshTokenBody.client_id)
+              });
+            }
+          });
+        })
+      }
+
+      else {
+        embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
+      }
+
+
+    
+
+
     }
-  }
 
 });
