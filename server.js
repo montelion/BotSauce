@@ -18,11 +18,10 @@ along with this program.  If not, see <https://www.gnu.org/licenses/>.
 The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 */
 
-
 'use strict';
 
-const version = '3.6'
-const releaseDate = '16/8/2020'
+const version = '3.7'
+const releaseDate = '19/8/2020'
 
 const Discord = require('discord.js');
 const { Client, MessageEmbed } = require('discord.js');
@@ -263,7 +262,23 @@ client.on("guildMemberAdd", member => {
 //This is the code that listens for commands and sends the messages
 client.on('message', async message => {
 
-  if (!message.content.startsWith(prefix)) return;
+
+  if (message.channel.type === 'news') {
+
+    const publishFromAnnouncAPIcall = {
+      url: 'https://discord.com/api/v6/channels/' + message.channel.id +'/messages/' + message.id + '/crosspost',
+      method: 'POST',
+      headers: {
+        'Authorization': 'Bot ' + process.env.BOT_TOKEN
+      }
+    }
+
+    request.post(publishFromAnnouncAPIcall, function (error, response, refreshTokenBody) {
+      console.log('statusCode:', response && response.statusCode); 
+    })
+  }
+
+  else if (!message.content.startsWith(prefix)) return;
   
   /////////////////
   //             //
@@ -422,10 +437,10 @@ client.on('message', async message => {
   */
   if (command === 'ban') {
 
-  	const userToBan = message.mentions.members.first()
+    const userToBan = message.mentions.members.first()
 
-  	if (checkIfAdmin) {  // returns true if the member has at least one of the roles
-  		if (!userToBan) {
+    if (checkIfAdmin) {  // returns true if the member has at least one of the roles
+      if (!userToBan) {
             embedCommand('Error!', 'You didn\'t mention any user, ' + mentionAuthor + '! Example: **\\ban** *usertoban* reason');
         }
     
@@ -435,7 +450,7 @@ client.on('message', async message => {
     let banReason = args.slice(2).join(' ');
     if(!banReason) banReason = "No reason provided";
 
-    	let embed = new MessageEmbed()
+      let embed = new MessageEmbed()
         .setTitle('Ban user?')
         .setColor(0x6b5cdf)
         .setDescription('**User:** \n<@' + userToBan + '> \n\n**Reason** ***(visible to the banned user)*** \n' + (banReason || '*No reason provided*') + '\n \n' + mentionAuthor + ', To confirm, tap 🌮');
@@ -447,10 +462,10 @@ client.on('message', async message => {
             { max: 1, time: 30000 }).then(collected => {
                 if (collected.first().emoji.name == '🌮') {
                     embedCommand('Great!', '<@' + userToBan + '> has been banned by ' + mentionAuthor)
-  	                userToBan.send('You have been banned from the Vsauce 3 Discord server. \n \n**Reason** \n' + banReason + '\n \n If you\'d like to send a ban appeal, follow this link: \nhttps://docs.google.com/forms/d/e/1FAIpQLSf2MK_S_0G2B1PhmAq9ieF40S-7TJ1SOCrSBik4ByUr1PoDhA/viewform?usp=sf_link')
-  	                setTimeout(() => {  userToBan.ban(banReason) }, 2000)
+                    userToBan.send('You have been banned from the Vsauce 3 Discord server. \n \n**Reason** \n' + banReason + '\n \n If you\'d like to send a ban appeal, follow this link: \nhttps://docs.google.com/forms/d/e/1FAIpQLSf2MK_S_0G2B1PhmAq9ieF40S-7TJ1SOCrSBik4ByUr1PoDhA/viewform?usp=sf_link')
+                    setTimeout(() => {  userToBan.ban(banReason) }, 2000)
                     ;
-  	    	       
+                 
                 }
             });
         })
@@ -465,7 +480,7 @@ client.on('message', async message => {
   }
 
   if (command === 'help') {
-    embedCommand('Commands:', '**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*\'cause I don\'t think you can handle it. You can\'t handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n **\\fingers**\nHey, Vsauce. Michael here. *Where are your fingers?* \n \n **\\succ**\n***S  U  C  C*** \n \n **\\bazinga** \n ***B A Z I N G A*** \n \n **\\stop** \n *Stops whatever the bot is playing in VC* \n \n **\\jakerobot**\nLinks to AI-generated tweets made using tweets by @jakerawr \n \n **\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
+    embedCommand('Commands:', '**(Also available on https://botsauce.github.io/)**\n\n**\\twitch** \nLinks to Jake\'s Twitch account \n \n**\\youtube** \nLinks to Jake\'s YouTube channels \n \n **\\twitter** \nLinks to Jake\'s Twitter accounts \n \n**\\randomvideo** \nLinks to a randomly selected Vsauce3 video \n \n**\\caulk** \n*\'cause I don\'t think you can handle it. You can\'t handle...* this command \n \n**\\weigh** \nWhat does this command do? *Mmm, very good question. But more importantly... how much does it weigh?* \n \n **\\fingers**\nHey, Vsauce. Michael here. *Where are your fingers?* \n \n **\\succ**\n***S  U  C  C*** \n \n **\\bazinga** \n ***B A Z I N G A*** \n \n **\\stop** \n *Stops whatever the bot is playing in VC* \n \n **\\jakerobot**\nLinks to AI-generated tweets made using tweets by @jakerawr \n \n **\\orisit** \nPlays "Moon Men" by Jake Chudnow (a.k.a. the Vsauce theme)')
   }
 
   if (command === 'caulk') {
@@ -520,7 +535,7 @@ client.on('message', async message => {
   }
 
   if (command === 'info') {
-    embedCommand('Bot information', '**Version**: ' + version + ' \n \n**Released on:** ' + releaseDate + ' *(d/m/yyyy)* \n \n**Changelog:** https://montelion.gitbook.io/botsauce/changelog \n \n **Source code:** https://github.com/Montelion/BotSauce \n \n *Made with love by Monty#3581*');
+    embedCommand('Bot information', '**Version**: ' + version + ' \n \n**Released on:** ' + releaseDate + ' *(d/m/yyyy)* \n \n**Changelog:** https://botsauce.github.io/changelog.html \n \n **Source code:** https://github.com/BotSauce/BotSauce \n \n *Made with love by Monty#3581*');
   }
 
   if (command === 'randomvideo') {
@@ -667,11 +682,6 @@ client.on('message', async message => {
       else {
         embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
       }
-
-
-    
-
-
     }
 
 });
