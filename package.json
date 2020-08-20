@@ -2,7 +2,7 @@
   "name": "BotSauce",
   "main": "server.js",
   "description": "BotSauce",
-  "version": "3.7.0",
+  "version": "3.9.0",
   "private": false,
   "engines": {
     "node": "12.*"
