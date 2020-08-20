@@ -1,5 +1,5 @@
 /*
-BotSauce v3.6, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.9, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Montelion#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '3.7'
-const releaseDate = '19/8/2020'
+const version = '3.9'
+const releaseDate = '20/8/2020'
 
 const Discord = require('discord.js');
 const { Client, MessageEmbed } = require('discord.js');
@@ -245,6 +245,40 @@ client.on('ready', () => {
 });
 
 
+client.on("messageDelete", message => {
+
+  const logsChannel = client.channels.cache.get('714618896409428069')
+
+  if (message.author.id === client.user.id) return;
+
+  if (message.channel === 739334780780544100 || message.channel === 739004071809253448 || message.channel === 727676446897864705 || message.channel === 727681122204647505 || message.channel === 714618769955225703 || message.channel === 738836123190558791 || message.channel === 727992835827040316 || message.channel === 727677054740332584 || message.channel === 739826940873277491 || message.channel === 727679987238567997) return;
+
+  let embed = new MessageEmbed()
+  .setTitle('🗑️ Message deleted')
+  .setColor(0xff4040)
+  .setDescription('Message sent by <@' + message.author + '> deleted in <#' + message.channel + '> \n\n**Deleted message:** \n' + message.content)
+  .setAuthor(message.author.username + '#' + message.author.discriminator, message.author.avatarURL(), '')
+  logsChannel.send(embed);
+
+});
+
+
+client.on("messageUpdate", (oldMessage, newMessage) => {
+
+  if (newMessage.author.id === client.user.id) return;
+
+  if (newMessage.channel === 739334780780544100 || newMessage.channel === 739004071809253448 || newMessage.channel === 727676446897864705 || newMessage.channel === 727681122204647505 || newMessage.channel === 714618769955225703 || newMessage.channel === 738836123190558791 || newMessage.channel === 727992835827040316 || newMessage.channel === 727677054740332584 || newMessage.channel === 739826940873277491 || newMessage.channel === 727679987238567997) return;
+
+  const logsChannel = client.channels.cache.get('714618896409428069')
+
+  let embed = new MessageEmbed()
+  .setTitle('✏️ Message edited')
+  .setColor(0xfcba03)
+  .setDescription('[Message](' + newMessage.url + ') edited by <@' + newMessage.author + '> in <#' + newMessage.channel + '> \n\n**Old message:** \n' + oldMessage.content + '\n\n**New message:** \n' + newMessage.content)
+  .setAuthor(newMessage.author.username + '#' + newMessage.author.discriminator, newMessage.author.avatarURL(), '')
+  logsChannel.send(embed);
+
+});
 
 
 
