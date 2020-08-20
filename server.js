@@ -1,5 +1,5 @@
 /*
-BotSauce v3.9, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.8, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Montelion#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '3.9'
+const version = '3.8'
 const releaseDate = '20/8/2020'
 
 const Discord = require('discord.js');
