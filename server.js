@@ -1,5 +1,5 @@
 /*
-BotSauce v3.8, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.8.1, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Montelion#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '3.8'
-const releaseDate = '20/8/2020'
+const version = '3.8.1'
+const releaseDate = '21/8/2020'
 
 const Discord = require('discord.js');
 const { Client, MessageEmbed } = require('discord.js');
@@ -265,9 +265,7 @@ client.on("messageDelete", message => {
 
 client.on("messageUpdate", (oldMessage, newMessage) => {
 
-  if (newMessage.author.id === client.user.id) return;
-
-  if (newMessage.channel === client.channels.cache.get('727676446897864705')) return;
+  if (newMessage.author.id === client.user.id || newMessage.channel === client.channels.cache.get('727676446897864705') || oldMessage.content === newMessage.content) return;
 
   const logsChannel = client.channels.cache.get('714618896409428069')
 
