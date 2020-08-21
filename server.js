@@ -1,6 +1,6 @@
 /*
-BotSauce v3.8.1, the Discord bot for the official Vsauce3 Discord Server
-Copyright (C) 2020 Montelion#3581
+BotSauce v3.9, the Discord bot for the official Vsauce3 Discord Server
+Copyright (C) 2020 Monty#3581
 
 This program is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -20,8 +20,8 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '3.8.1'
-const releaseDate = '21/8/2020'
+const version = '3.9'
+const releaseDate = '22/8/2020'
 
 const Discord = require('discord.js');
 const { Client, MessageEmbed } = require('discord.js');
@@ -55,6 +55,8 @@ app.use(bodyParser.json())
 const twitchRoleID = '715427352103878679'
 const twitterRoleID = '715427437206568970'
 const ytRoleID = '715610520341839882'
+
+const logsChannelID = '714618896409428069'
 
 //some stuff for the twitch API
 let parsedRefreshTokenBody = ""
@@ -245,49 +247,7 @@ client.on('ready', () => {
 });
 
 
-client.on("messageDelete", message => {
 
-  const logsChannel = client.channels.cache.get('714618896409428069')
-
-  if (message.author.id === client.user.id) return;
-
-  if (message.channel === client.channels.cache.get('727676446897864705')) return;
-
-  let embed = new MessageEmbed()
-  .setTitle('🗑️ Message deleted')
-  .setColor(0xff4040)
-  .setDescription('Message sent by <@' + message.author + '> deleted in <#' + message.channel + '> \n\n**Deleted message:** \n' + message.content)
-  .setAuthor(message.author.username + '#' + message.author.discriminator, message.author.avatarURL(), '')
-  logsChannel.send(embed);
-
-});
-
-
-client.on("messageUpdate", (oldMessage, newMessage) => {
-
-  if (newMessage.author.id === client.user.id || newMessage.channel === client.channels.cache.get('727676446897864705') || oldMessage.content === newMessage.content) return;
-
-  const logsChannel = client.channels.cache.get('714618896409428069')
-
-  let embed = new MessageEmbed()
-  .setTitle('✏️ Message edited')
-  .setColor(0xfcba03)
-  .setDescription('[Message](' + newMessage.url + ') edited by <@' + newMessage.author + '> in <#' + newMessage.channel + '> \n\n**Old message:** \n' + oldMessage.content + '\n\n**New message:** \n' + newMessage.content)
-  .setAuthor(newMessage.author.username + '#' + newMessage.author.discriminator, newMessage.author.avatarURL(), '')
-  logsChannel.send(embed);
-
-});
-
-
-
-client.on("guildMemberAdd", member => {
-
-    const arrivalsChannel = client.channels.cache.get('714538264157093948')
-
-    console.log('it successfully found the channel')
-    arrivalsChannel.send('Welcome, **' + member.user.username + '#' + member.user.discriminator + '**! Can you handle the caulk?')
-
-});
 
  
 
@@ -450,23 +410,7 @@ client.on('message', async message => {
   //            //
   ////////////////
 
-  /*
-  if (command === 'test') {
-
-    let twitchLiveEmbed = new MessageEmbed()
-    .setColor(0x6b5cdf)
-    .setTitle('StreamTitle')
-    .setURL('https://twitch.tv/jakeroper')
-    .setAuthor('JakeRoper', 'https://images-ext-1.discordapp.net/external/PD-weNTsNfEueNNYPdnV3601LzqFrzR5WeDXppDVz3I/https/static-cdn.jtvnw.net/jtv_user_pictures/jakeroper-profile_image-1bcf7b0eda6d5b90-300x300.jpeg', 'https://twitch.tv/jakeroper')
-    .setThumbnail('https://images-ext-1.discordapp.net/external/PD-weNTsNfEueNNYPdnV3601LzqFrzR5WeDXppDVz3I/https/static-cdn.jtvnw.net/jtv_user_pictures/jakeroper-profile_image-1bcf7b0eda6d5b90-300x300.jpeg')
-    .addFields(
-      { name: 'Game', value: 'GameName', inline: true },
-      { name: 'Viewers', value: 'ViewerCount', inline: true },
-    )
-    .setImage('https://images-ext-1.discordapp.net/external/2V4pphZzBZV2hYr2_ZfYOQ48ZrRRgWIBfJNabu6Es9k/%3Fr%3D78147/https/static-cdn.jtvnw.net/previews-ttv/live_user_jakeroper-320x180.jpg')
-    message.channel.send('Hey ' + '<@&' + twitchRoleID + '>' + ' **JakeRoper** is now live on Twitch! Let\'s hang out! \nhttps://twitch.tv/jakeroper', twitchLiveEmbed);
-  }
-  */
+  
   if (command === 'ban') {
 
     const userToBan = message.mentions.members.first()
@@ -715,5 +659,124 @@ client.on('message', async message => {
         embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the comamnd
       }
     }
+
+});
+
+
+
+
+
+
+
+client.on('voiceStateUpdate', (oldMember, newMember) => {
+
+  const logsChannel = client.channels.cache.get(logsChannelID)
+
+  let newUserChannel = newMember.channel
+  let oldUserChannel = oldMember.channel
+
+
+  if (oldUserChannel === null && newUserChannel !== null) {
+
+    let embed = new MessageEmbed()
+    .setTitle('⮕🔈 Voice channel join')
+    .setColor(0x50c850)
+    .setDescription('<@' + newMember.member.id + '> joined voice channel 🔈' + newMember.channel.name)
+    .setAuthor(newMember.member.user.username + '#' + newMember.member.user.discriminator, newMember.member.user.avatarURL(), '')
+    logsChannel.send(embed);
+
+  } else if (newUserChannel === null) {
+
+    let embed = new MessageEmbed()
+    .setTitle('🔈⮕ Voice channel leave')
+    .setColor(0xff4040)
+    .setDescription('<@' + oldMember.member.id + '> left voice channel 🔈' + oldMember.channel.name)
+    .setAuthor(oldMember.member.user.username + '#' + oldMember.member.user.discriminator, oldMember.member.user.avatarURL(), '')
+    logsChannel.send(embed);
+
+  }
+
+})
+
+
+
+client.on("guildMemberUpdate", function(oldMember, newMember){
+
+  const logsChannel = client.channels.cache.get(logsChannelID)
+  
+  if (oldMember.nickname === newMember.nickname) return;
+
+  let embed = new MessageEmbed()
+  .setTitle('✏️ Nickname edited')
+  .setColor(0xfcba03)
+  .setDescription('<@' + newMember.id + '> nickname edited.')
+  .setAuthor(oldMember.user.username + '#' + oldMember.user.discriminator, oldMember.user.avatarURL(), '')
+  .setThumbnail(oldMember.user.avatarURL())
+  .addFields(
+    { name: 'Old nickname', value: oldMember.nickname, inline: true },
+    { name: 'New nickname', value: newMember.nickname, inline: true },
+  )
+  logsChannel.send(embed);
+});
+
+
+
+
+client.on("messageDelete", message => {
+
+  const logsChannel = client.channels.cache.get(logsChannelID)
+
+  if (message.author.id === client.user.id) return;
+
+  if (message.channel === client.channels.cache.get('727676446897864705')) return;
+
+  let embed = new MessageEmbed()
+  .setTitle('🗑️ Message deleted')
+  .setColor(0xff4040)
+  .setDescription('Message sent by <@' + message.author + '> deleted in <#' + message.channel + '> \n\n**Deleted message:** \n' + message.content)
+  .setAuthor(message.author.username + '#' + message.author.discriminator, message.author.avatarURL(), '')
+  logsChannel.send(embed);
+
+});
+
+
+
+client.on("messageUpdate", (oldMessage, newMessage) => {
+
+  const logsChannel = client.channels.cache.get(logsChannelID)
+
+  if (newMessage.author.id === client.user.id) return;
+
+  if (newMessage.channel === client.channels.cache.get('727676446897864705')) return;
+
+  let embed = new MessageEmbed()
+  .setTitle('✏️ Message edited')
+  .setColor(0xfcba03)
+  .setDescription('[Message](' + newMessage.url + ') edited by <@' + newMessage.author + '> in <#' + newMessage.channel + '> \n\n**Old message:** \n' + oldMessage.content + '\n\n**New message:** \n' + newMessage.content)
+  .setAuthor(newMessage.author.username + '#' + newMessage.author.discriminator, newMessage.author.avatarURL(), '')
+  logsChannel.send(embed);
+
+});
+
+
+
+client.on("guildMemberAdd", member => {
+
+    const arrivalsChannel = client.channels.cache.get('714538264157093948')
+
+    arrivalsChannel.send('Welcome, **' + member.user.username + '#' + member.user.discriminator + '**! Can you handle the caulk?')
+
+});
+
+client.on("guildMemberRemove", member => {
+
+  const logsChannel = client.channels.cache.get(logsChannelID)
+
+  let embed = new MessageEmbed()
+  .setColor(0xff4040)
+  .setDescription('📤 <@' + member.id + '> left the server.')
+  .setAuthor(member.user.username + '#' + member.user.discriminator, member.user.avatarURL(), '')
+  .setThumbnail(member.user.avatarURL())
+  logsChannel.send(embed);
 
 });
