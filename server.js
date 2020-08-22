@@ -1,5 +1,5 @@
 /*
-BotSauce v3.9, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v3.9.1, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Monty#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -20,7 +20,7 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '3.9'
+const version = '3.9.1'
 const releaseDate = '22/8/2020'
 
 const Discord = require('discord.js');
@@ -700,11 +700,35 @@ client.on('voiceStateUpdate', (oldMember, newMember) => {
 
 
 
-client.on("guildMemberUpdate", function(oldMember, newMember){
+client.on("guildMemberUpdate", (oldMember, newMember) => {
 
   const logsChannel = client.channels.cache.get(logsChannelID)
-  
+
   if (oldMember.nickname === newMember.nickname) return;
+
+  function getOldNickname() {
+
+    if (oldMember.nickname === null) {
+      return oldMember.user.username;
+    }
+    else {
+      return oldMember.nickname;
+    }
+
+  }
+
+  function getNewNickname() {
+
+    if (newMember.nickname === null) {
+      return newMember.user.username;
+    }
+    else {
+      return newMember.nickname;
+    }
+
+  }
+
+
 
   let embed = new MessageEmbed()
   .setTitle('✏️ Nickname edited')
@@ -713,8 +737,8 @@ client.on("guildMemberUpdate", function(oldMember, newMember){
   .setAuthor(oldMember.user.username + '#' + oldMember.user.discriminator, oldMember.user.avatarURL(), '')
   .setThumbnail(oldMember.user.avatarURL())
   .addFields(
-    { name: 'Old nickname', value: oldMember.nickname, inline: true },
-    { name: 'New nickname', value: newMember.nickname, inline: true },
+    { name: 'Old nickname', value: getOldNickname(), inline: true },
+    { name: 'New nickname', value: getNewNickname(), inline: true },
   )
   logsChannel.send(embed);
 });
@@ -745,9 +769,7 @@ client.on("messageUpdate", (oldMessage, newMessage) => {
 
   const logsChannel = client.channels.cache.get(logsChannelID)
 
-  if (newMessage.author.id === client.user.id) return;
-
-  if (newMessage.channel === client.channels.cache.get('727676446897864705')) return;
+  if (newMessage.author.id === client.user.id || oldMessage.content === newMessage.content || newMessage.channel === client.channels.cache.get('727676446897864705')) return;
 
   let embed = new MessageEmbed()
   .setTitle('✏️ Message edited')
