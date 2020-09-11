@@ -22,7 +22,7 @@
     "dotenv": "*",
     "express": "^4.15.x",
     "ffmpeg-static": "*",
-    "mongodb": "^3.6.1",
+    "mongodb": "^3.6.2",
     "ytdl-core": "*"
   },
   "author": "Monty#3581",
