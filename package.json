@@ -1,26 +1,28 @@
 {
   "name": "BotSauce",
-  "main": "server.js",
+  "main": "bot.js",
   "description": "BotSauce",
-  "version": "3.9.1",
+  "version": "4.0.0",
   "private": false,
   "engines": {
     "node": "12.*"
   },
   "scripts": {
-    "start": "node server.js"
+    "start": "node bot.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/BotSauce/BotSauce"
   },
   "dependencies": {
+    "@cloudant/cloudant": "^3.0.2",
     "@discordjs/opus": "*",
     "body-parser": "^1.17.x",
     "cfenv": "^1.0.x",
     "discord.js": "^12.2.0",
     "dotenv": "*",
     "express": "^4.15.x",
+    "fetch": "^1.1.0",
     "ffmpeg-static": "*",
     "ytdl-core": "*"
   },
