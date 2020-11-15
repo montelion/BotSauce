@@ -20,8 +20,8 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '4.0.0'
-const releaseDate = '22/9/2020'
+const version = '4.1.0'
+const releaseDate = '15/11/2020'
 
 const twitchClientID = 'muexic89yevvg6vry4rdlv7byc4656'
 
@@ -689,18 +689,46 @@ client.on("guildMemberUpdate", (oldMember, newMember) => {
 
 client.on("messageDelete", message => {
 
+  console.log(message.attachments.array()[0])
+
   const logsChannel = client.channels.cache.get(logsChannelID)
 
   if (message.author.id === client.user.id) return;
-
   if (message.channel === client.channels.cache.get('727676446897864705')) return;
+  if (message.author.bot) return;
 
-  let embed = new MessageEmbed()
-  .setTitle('🗑️ Message deleted')
-  .setColor(0xff4040)
-  .setDescription('Message sent by <@' + message.author + '> deleted in <#' + message.channel + '> \n\n**Deleted message:** \n' + message.content)
-  .setAuthor(message.author.username + '#' + message.author.discriminator, message.author.avatarURL(), '')
-  logsChannel.send(embed);
+  if (!message.attachments.array()[0]) {
+    let embed = new MessageEmbed()
+    .setTitle('🗑️ Message deleted')
+    .setColor(0xff4040)
+    .setDescription('Message sent by <@' + message.author + '> deleted in <#' + message.channel + '>')
+    .addFields(
+      { name: 'Deleted message', value: message.content},
+    )
+    .setAuthor(message.author.username + '#' + message.author.discriminator, message.author.avatarURL(), '')
+   logsChannel.send(embed);
+  }
+  else {
+
+    function atchNum() {
+      if (message.attachments.array().length === 1) {
+        return (message.attachments.array().length + ' attachment')
+      } else {
+        return (message.attachments.array().length + ' attachments')
+      }
+    }
+
+    let embed = new MessageEmbed()
+    .setTitle('🗑️ Message deleted')
+    .setColor(0xff4040)
+    .setDescription('Message sent by <@' + message.author + '> deleted in <#' + message.channel + '>')
+    .addFields(
+      { name: 'Deleted message', value: (message.content || '*The body of the message was empty.*') },
+      { name: 'Attachments', value: '*The message contained ' + atchNum() + '.*' }
+    )
+    .setAuthor(message.author.username + '#' + message.author.discriminator, message.author.avatarURL(), '')
+   logsChannel.send(embed); 
+  }
 
 });
 
@@ -709,13 +737,19 @@ client.on("messageDelete", message => {
 client.on("messageUpdate", (oldMessage, newMessage) => {
 
   const logsChannel = client.channels.cache.get(logsChannelID)
-
-  if (newMessage.author.id === client.user.id || oldMessage.content === newMessage.content || newMessage.channel === client.channels.cache.get('727676446897864705')) return;
+  if (newMessage.author.bot) return;
+  if (newMessage.author.id === client.user.id) return;
+  if (oldMessage.content === newMessage.content) return;
+  if (newMessage.channel === client.channels.cache.get('727676446897864705')) return;
 
   let embed = new MessageEmbed()
   .setTitle('✏️ Message edited')
   .setColor(0xfcba03)
-  .setDescription('[Message](' + newMessage.url + ') edited by <@' + newMessage.author + '> in <#' + newMessage.channel + '> \n\n**Old message:** \n' + oldMessage.content + '\n\n**New message:** \n' + newMessage.content)
+  .setDescription('[Message](' + newMessage.url + ') edited by <@' + newMessage.author + '> in <#' + newMessage.channel + '>')
+  .addFields(
+        { name: 'Old message', value: oldMessage.content },
+        { name: 'New message', value: newMessage.content },
+   )
   .setAuthor(newMessage.author.username + '#' + newMessage.author.discriminator, newMessage.author.avatarURL(), '')
   logsChannel.send(embed);
 
@@ -728,7 +762,6 @@ client.on("guildMemberAdd", member => {
     const arrivalsChannel = client.channels.cache.get('714538264157093948')
     
     arrivalsChannel.send(welcomeMessages[Math.floor(Math.random() * welcomeMessages.length)].replace("{user}", '**' + member.user.username + '#' + member.user.discriminator + '**'))
-
 });
 
 client.on("guildMemberRemove", member => {
