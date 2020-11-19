@@ -1,5 +1,5 @@
 /*
-BotSauce v4.0.0, the Discord bot for the official Vsauce3 Discord Server
+BotSauce v4.2.0, the Discord bot for the official Vsauce3 Discord Server
 Copyright (C) 2020 Monty#3581
 
 This program is free software: you can redistribute it and/or modify
@@ -20,8 +20,8 @@ The command \randomvideo was suggested by Mathias Thornton#1751. Thanks Mathias!
 
 'use strict';
 
-const version = '4.1.0'
-const releaseDate = '15/11/2020'
+const version = '4.2.0 - haha guys this is so funny, ***420***'
+const releaseDate = '19/11/2020'
 
 const twitchClientID = 'muexic89yevvg6vry4rdlv7byc4656'
 
@@ -52,6 +52,10 @@ const app = express()
 const port = process.env.PORT || 3000
 app.use(bodyParser.json())
 
+// Used for Upptime
+app.get('/', (req, res) => {
+  res.sendFile(__dirname + '/index.html');
+});
 
 //The IDs for the roles on the Vsauce3 server
 const twitchRoleID = '715427352103878679'
@@ -388,25 +392,26 @@ client.on('message', async message => {
   //            //
   ////////////////
 
-if (command === 'ban') {
+if (command === 'edit') {
 
-  	const userToBan = message.mentions.members.first()
-
-  	if (message.member.hasPermission('BAN_MEMBERS')) {
-  		if (!userToBan) {
-            embedCommand('Error!', 'You didn\'t mention any user, ' + mentionAuthor + '! Example: **\\ban** *usertoban* reason');
+      if (message.member.hasPermission('KICK_MEMBERS')) {
+      if (!args[3]) {
+            embedCommand('Error!', 'You didn\'t provide any arguments, ' + mentionAuthor + '! Usage: **\\edit** *channel ID* *message ID* New message content');
         }
+        else {
 
-        if(!userToBan.bannable) 
-      return embedCommand('Error!', 'I can\'t ban that user');
+        client.channels.cache.get(args[1]).messages.fetch(args[2]).then(msg => {
+        console.log('Message: ' + msg)
 
-    let banReason = args.slice(2).join(' ');
-    if(!banReason) banReason = "No reason provided";
+        let newMsg = args.slice(3).join(' ');
 
-    	let embed = new MessageEmbed()
-        .setTitle('Ban user?')
+      let embed = new MessageEmbed()
+        .setTitle('Edit message?')
         .setColor(0x6b5cdf)
-        .setDescription('**User:** \n<@' + userToBan + '> \n\n**Reason** ***(visible to the banned user)*** \n' + (banReason || '*No reason provided*') + '\n \n' + mentionAuthor + ', To confirm, tap 🌮');
+        .addFields(
+          { name: 'Message URL', value: 'https://discord.com/channels/' + message.guild.id + '/' + args[1] + '/' + args[2] },
+        )
+        .setDescription(mentionAuthor + ', to confirm, tap 🌮.')
         message.channel.send(embed).then(sentEmbed => {
             sentEmbed.react("🌮")
 
@@ -414,21 +419,60 @@ if (command === 'ban') {
             sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
             { max: 1, time: 30000 }).then(collected => {
                 if (collected.first().emoji.name == '🌮') {
-                    embedCommand('Great!', '<@' + userToBan + '> has been banned by ' + mentionAuthor)
-  	                userToBan.send('You have been banned from the Vsauce 3 Discord server. \n \n**Reason** \n' + banReason + '\n \n If you\'d like to send a ban appeal, follow this link: \nhttps://botsauce.github.io/banappeal.html')
-  	                setTimeout(() => {  userToBan.ban({ reason: banReason }) }, 2000)
-                    ;
-
+                    msg.edit(newMsg);
+                    embedCommand('Great!', mentionAuthor + ', here\'s the edited message [here](https://discord.com/channels/' + message.guild.id + '/' + args[1] + '/' + args[2] + ')')
                 }
             });
         })
-
+      })
+}
     }
 
 
     else {
       embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
     }
+}
+
+if (command === 'send') {
+
+    if (message.member.hasPermission('KICK_MEMBERS')) {
+      if (!args[2]) {
+            embedCommand('Error!', 'You didn\'t provide any arguments, ' + mentionAuthor + '! Usage: **\\send** *channel ID* Message content');
+        }
+        else {
+
+        let chnl = client.channels.cache.get(args[1])
+
+       let msg = args.slice(2).join(' ');
+
+      let embed = new MessageEmbed()
+        .setTitle('Send message?')
+        .setColor(0x6b5cdf)
+          .addFields(
+         { name: 'Message content', value: msg },
+          )
+        .setDescription(mentionAuthor + ', to confirm, tap 🌮.')
+        message.channel.send(embed).then(sentEmbed => {
+            sentEmbed.react("🌮")
+
+
+            sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
+            { max: 1, time: 30000 }).then(collected => {
+                if (collected.first().emoji.name == '🌮') {
+                    chnl.send(msg);
+                    embedCommand('Great!', mentionAuthor + ', you sent:\n' +  msg + '\nas the bot')
+                }
+            });
+        })
+}
+    }
+
+
+    else {
+      embedCommand('Oof', 'I\'m sorry ' + mentionAuthor + ', I can\'t let you do that.');   //The user who ran the command doesn't have the right role to run the command
+    }
+
 
   }
 
@@ -589,6 +633,44 @@ if (command === 'ban') {
       }
     }
 
+    if (command === 'ban') {
+    
+    const userToBan = message.mentions.members.first()
+
+  	if (message.member.hasPermission('BAN_MEMBERS')) {
+  		if (!userToBan) {
+            embedCommand('Error!', 'You didn\'t mention any user, ' + mentionAuthor + '! Example: **\\ban** *usertoban* reason');
+        }
+
+        if(!userToBan.bannable) 
+      return embedCommand('Error!', 'I can\'t ban that user');
+
+    let banReason = args.slice(2).join(' ');
+    if(!banReason) banReason = "No reason provided";
+
+    	let embed = new MessageEmbed()
+        .setTitle('Ban user?')
+        .setColor(0x6b5cdf)
+        .setDescription('**User:** \n<@' + userToBan + '> \n\n**Reason** ***(visible to the banned user)*** \n' + (banReason || '*No reason provided*') + '\n \n' + mentionAuthor + ', To confirm, tap 🌮');
+        message.channel.send(embed).then(sentEmbed => {
+            sentEmbed.react("🌮")
+
+
+            sentEmbed.awaitReactions((reaction, user) => user.id == message.author.id && reaction.emoji.name == '🌮',
+            { max: 1, time: 30000 }).then(collected => {
+                if (collected.first().emoji.name == '🌮') {
+                    embedCommand('Great!', '<@' + userToBan + '> has been banned by ' + mentionAuthor)
+  	                userToBan.send('You have been banned from the Vsauce 3 Discord server. \n \n**Reason** \n' + banReason + '\n \n If you\'d like to send a ban appeal, follow this link: \nhttps://botsauce.github.io/banappeal.html')
+  	                setTimeout(() => {  userToBan.ban({ reason: banReason }) }, 2000)
+                    ;
+
+                }
+            });
+        })
+
+    }
+  }
+
     if (command === 'modhelp') {
 
       if (message.member.hasPermission('KICK_MEMBERS')) {
@@ -599,7 +681,9 @@ if (command === 'ban') {
         .addFields(
           { name: '\\setstatus', value: 'Sets a custom status for the bot.\n*Usage: \\setstatus followed by the status*', inline: true },
           { name: '\\resetstatus', value: 'Resets the status to its original state (' + defaultStatus + ')', inline: true },
-          { name: '\\ban (admin only)', value: 'Bans a user (duh): \\ban @[user] [reason(not mandatory)] and sends them the complaint form', inline: true }
+          { name: '\\ban (admin only)', value: 'Bans a user (duh). Usage: **\\ban** *@[user]* *[reason(not mandatory)]* and sends them the complaint form', inline: true },
+          { name: '\\send', value: 'Sends a message as the bot. Usage: **\\send** *channel ID* *Message content*', inline: true },
+          { name: '\\edit', value: 'Edits a message sent by/as the bot. Usage: **\\edit** *channel ID* *message ID* New message content', inline: true },
         )
         message.channel.send(embed);
       }
@@ -776,3 +860,4 @@ client.on("guildMemberRemove", member => {
   logsChannel.send(embed);
 
 });
+
