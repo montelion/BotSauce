@@ -1,31 +1,35 @@
 {
-  "name": "BotSauce",
-  "main": "bot.js",
-  "description": "BotSauce",
-  "version": "4.1.0",
-  "private": false,
-  "engines": {
-    "node": "12.*"
-  },
-  "scripts": {
-    "start": "node bot.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/BotSauce/BotSauce"
-  },
-  "dependencies": {
-    "@cloudant/cloudant": "^4.3.0",
-    "@discordjs/opus": "*",
-    "body-parser": "^1.17.x",
-    "cfenv": "^1.0.x",
-    "discord.js": "^12.5.1",
-    "dotenv": "*",
-    "express": "^4.15.x",
-    "fetch": "^1.1.0",
-    "ffmpeg-static": "*",
-    "ytdl-core": "*"
-  },
-  "author": "Monty#3581",
-  "license": "GPL-3.0-or-later"
+	"name": "botsauce-cmd-4.3.0",
+	"version": "5.0.0",
+	"description": "BotSauce",
+	"main": "bot.js",
+	"scripts": {
+		"start": "node bot.js"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/BotSauce/BotSauce.git"
+	},
+	"keywords": [
+		"bot",
+		"discord"
+	],
+	"author": "Monty#3581",
+	"license": "GPL-3.0-or-later",
+	"bugs": {
+		"url": "https://github.com/BotSauce/BotSauce/issues"
+	},
+	"homepage": "https://github.com/BotSauce/BotSauce#readme",
+	"dependencies": {
+		"@discordjs/opus": "^0.3.3",
+		"better-sqlite3": "^5.0.0",
+		"discord.js": "^12.5.1",
+		"discord.js-commando": "github:discordjs/Commando",
+		"dotenv": "^8.2.0",
+		"express": "^4.17.1",
+		"ffmpeg": "0.0.4",
+		"ffmpeg-static": "^4.2.7",
+		"node-fetch": "^2.6.1",
+		"sqlite": "^3.0.0"
+	}
 }

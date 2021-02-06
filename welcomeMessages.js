@@ -1,2 +1,0 @@
-const welcomeMessages = [ "{user} joined... or did they?", "Welcome, {user}! Can you handle the caulk?", "Hey, Vsauce, {user} here! Where are your fingers?", "{user} joined, it's taco time!", "{user} is gonna do what's called a pro-gamer move", "Welcome {user}, praise the great taco in the sky!" ]
-module.exports = welcomeMessages
