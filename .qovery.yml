@@ -1,0 +1,11 @@
+---
+application:
+  name: "botsauce"
+  project: "botsauce"
+  organization: "QoveryCommunity"
+routers:
+- name: "main-botsauce"
+  routes:
+  - application_name: "botsauce"
+    paths:
+    - "/*"
